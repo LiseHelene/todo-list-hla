@@ -1,13 +1,19 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Cabinet Huglo-Lepage — Gestionnaire de tâches",
-  description: "Application de gestion des tâches du cabinet Huglo-Lepage",
+  title: "Huglo Lepage Avocats — Gestionnaire de tâches",
+  description: "Application de gestion des tâches du cabinet Huglo Lepage Avocats",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );
