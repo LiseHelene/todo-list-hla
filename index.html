@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>To-Do List — Cabinet Huglo-Lepage</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- BANNIERE FIN DE MOIS -->
+  <div id="banniere-facturation" class="banniere-facturation hidden">
+    <span>&#128196; Rappel : fin de mois approche — pensez à la <strong>facturation</strong> !</span>
+    <button onclick="document.getElementById('banniere-facturation').classList.add('hidden')">✕</button>
+  </div>
+
+  <div class="conteneur">
+
+    <!-- EN-TETE -->
+    <header>
+      <div class="logo">⚖️</div>
+      <div>
+        <h1>Cabinet Huglo-Lepage</h1>
+        <p class="sous-titre">Gestionnaire de tâches</p>
+      </div>
+      <div id="date-aujourdhui" class="date-header"></div>
+    </header>
+
+    <!-- STATISTIQUES -->
+    <div class="stats">
+      <div class="stat-carte">
+        <span id="stat-total" class="stat-nombre">0</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-carte urgent">
+        <span id="stat-urgentes" class="stat-nombre">0</span>
+        <span class="stat-label">Urgentes</span>
+      </div>
+      <div class="stat-carte retard">
+        <span id="stat-retard" class="stat-nombre">0</span>
+        <span class="stat-label">En retard</span>
+      </div>
+      <div class="stat-carte terminees">
+        <span id="stat-terminees" class="stat-nombre">0</span>
+        <span class="stat-label">Terminées</span>
+      </div>
+    </div>
+
+    <!-- FORMULAIRE AJOUT TACHE -->
+    <section class="carte formulaire-section">
+      <h2>Ajouter une tâche</h2>
+      <div class="grille-formulaire">
+        <div class="champ">
+          <label for="titre">Titre de la tâche *</label>
+          <input type="text" id="titre" placeholder="Ex : Préparer conclusions dossier Dupont" />
+        </div>
+        <div class="champ">
+          <label for="avocat">Assigné à *</label>
+          <select id="avocat">
+            <option value="">-- Choisir un avocat --</option>
+            <option>Me Huglo</option>
+            <option>Me Lepage</option>
+            <option>Me Martin</option>
+            <option>Me Dubois</option>
+            <option>Me Bernard</option>
+            <option>Tout le cabinet</option>
+          </select>
+        </div>
+        <div class="champ">
+          <label for="priorite">Priorité *</label>
+          <select id="priorite">
+            <option value="normale">Normale</option>
+            <option value="haute">Haute</option>
+            <option value="urgente">Urgente 🔴</option>
+          </select>
+        </div>
+        <div class="champ">
+          <label for="deadline">Date limite</label>
+          <input type="date" id="deadline" />
+        </div>
+        <div class="champ champ-large">
+          <label for="description">Description (optionnel)</label>
+          <textarea id="description" rows="2" placeholder="Détails supplémentaires..."></textarea>
+        </div>
+        <div class="champ champ-large">
+          <label for="email-notif">E-mail pour rappel (optionnel)</label>
+          <input type="email" id="email-notif" placeholder="avocat@huglo-lepage.fr" />
+        </div>
+      </div>
+      <button class="btn-ajouter" onclick="ajouterTache()">+ Ajouter la tâche</button>
+    </section>
+
+    <!-- FILTRES -->
+    <div class="filtres">
+      <button class="filtre actif" onclick="filtrer('toutes', this)">Toutes</button>
+      <button class="filtre" onclick="filtrer('urgente', this)">Urgentes</button>
+      <button class="filtre" onclick="filtrer('haute', this)">Haute priorité</button>
+      <button class="filtre" onclick="filtrer('normale', this)">Normales</button>
+      <button class="filtre" onclick="filtrer('terminees', this)">Terminées</button>
+      <button class="filtre" onclick="filtrer('retard', this)">En retard</button>
+    </div>
+
+    <!-- LISTE DES TACHES -->
+    <section id="liste-taches">
+      <!-- Les tâches s'affichent ici dynamiquement -->
+    </section>
+
+    <p id="message-vide" class="message-vide hidden">Aucune tâche pour l'instant.</p>
+
+  </div>
+
+  <!-- MODAL CONFIRMATION SUPPRESSION -->
+  <div id="modal-suppression" class="modal hidden">
+    <div class="modal-contenu">
+      <h3>Supprimer cette tâche ?</h3>
+      <p>Cette action est irréversible.</p>
+      <div class="modal-boutons">
+        <button class="btn-annuler" onclick="fermerModal()">Annuler</button>
+        <button class="btn-confirmer" onclick="confirmerSuppression()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
