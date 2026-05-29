@@ -1,5 +1,7 @@
 'use client';
+import Image from "next/image";
 import { signIn } from "next-auth/react";
+import logoHla from "../TO DO LIST/uploads/Huglo Lepage Avocats - Gestionnaire de tâches.png";
 
 export default function LoginPage() {
   return (
@@ -9,7 +11,14 @@ export default function LoginPage() {
           <div className="corner-hatch hatch-light"></div>
           <div className="corner-block"></div>
           <div className="auth-logo-wrap">
-            <span className="logo-gavel" aria-hidden="true">⚖️</span>
+            <Image
+              src={logoHla}
+              alt="Logo Huglo Lepage Avocats"
+              width={44}
+              height={44}
+              className="logo-image"
+              priority
+            />
           </div>
           <div>
             <div className="firm">Cabinet Huglo Lepage</div>

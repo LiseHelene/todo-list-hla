@@ -1,5 +1,7 @@
 'use client';
+import Image from "next/image";
 import { signOut } from "next-auth/react";
+import logoHla from "../TO DO LIST/uploads/Huglo Lepage Avocats - Gestionnaire de tâches.png";
 
 function initialsFromName(name = "") {
   const cleaned = name.replace(/^Me\s+/i, "").trim();
@@ -24,7 +26,14 @@ export default function Header({ session }) {
 
       <div className="brand">
         <div className="logo-slot-wrap">
-          <span className="logo-gavel" aria-hidden="true">⚖️</span>
+          <Image
+            src={logoHla}
+            alt="Logo Huglo Lepage Avocats"
+            width={56}
+            height={56}
+            className="logo-image"
+            priority
+          />
         </div>
         <div className="brand-text">
           <h1 className="firm">Cabinet Huglo Lepage</h1>
