@@ -1,50 +1,61 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export function useTaches() {
-  const [taches, setTaches] = useState([]);
+  const [taches,    setTaches]    = useState([]);
+  const [chargement, setChargement] = useState(true);
 
-  // Charger les tâches depuis le localStorage au démarrage
-  useEffect(() => {
-    const sauvegardees = localStorage.getItem('taches-huglo');
-    if (sauvegardees) {
-      setTaches(JSON.parse(sauvegardees));
+  // Charger les tâches depuis l'API au montage
+  const charger = useCallback(async () => {
+    setChargement(true);
+    try {
+      const res = await fetch('/api/taches');
+      if (res.ok) setTaches(await res.json());
+    } catch (e) {
+      console.error('Erreur chargement tâches :', e);
+    } finally {
+      setChargement(false);
     }
   }, []);
 
-  // Sauvegarder automatiquement à chaque changement
-  useEffect(() => {
-    if (taches.length >= 0) {
-      localStorage.setItem('taches-huglo', JSON.stringify(taches));
+  useEffect(() => { charger(); }, [charger]);
+
+  async function ajouterTache(data) {
+    const res = await fetch('/api/taches', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(data),
+    });
+    if (res.ok) {
+      const nouvelle = await res.json();
+      setTaches(prev => [nouvelle, ...prev]);
     }
-  }, [taches]);
-
-  function ajouterTache({ titre, avocat, priorite, deadline, description, email }) {
-    const nouvelle = {
-      id: Date.now(),
-      titre,
-      avocat,
-      priorite,
-      deadline,
-      description,
-      email,
-      terminee: false,
-      dateCreation: new Date().toISOString(),
-    };
-    setTaches(prev => [nouvelle, ...prev]);
   }
 
-  function toggleTerminee(id) {
-    setTaches(prev =>
-      prev.map(t => t.id === id ? { ...t, terminee: !t.terminee } : t)
-    );
+  async function toggleTerminee(id) {
+    const tache = taches.find(t => t.id === id);
+    if (!tache) return;
+    const res = await fetch(`/api/taches/${id}`, {
+      method:  'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ terminee: !tache.terminee }),
+    });
+    if (res.ok) {
+      const maj = await res.json();
+      setTaches(prev => prev.map(t => t.id === id ? maj : t));
+    }
   }
 
-  function supprimerTache(id) {
-    setTaches(prev => prev.filter(t => t.id !== id));
+  async function supprimerTache(id) {
+    const res = await fetch(`/api/taches/${id}`, { method: 'DELETE' });
+    if (res.ok) setTaches(prev => prev.filter(t => t.id !== id));
   }
 
-  // Statistiques calculées
+  // Ajouter une tâche importée depuis le calendrier
+  function ajouterDepuisCalendrier(tache) {
+    setTaches(prev => [tache, ...prev]);
+  }
+
   const stats = {
     total:     taches.filter(t => !t.terminee).length,
     urgentes:  taches.filter(t => t.priorite === 'urgente' && !t.terminee).length,
@@ -52,21 +63,21 @@ export function useTaches() {
     terminees: taches.filter(t => t.terminee).length,
   };
 
-  return { taches, ajouterTache, toggleTerminee, supprimerTache, stats };
+  return { taches, chargement, ajouterTache, toggleTerminee, supprimerTache, ajouterDepuisCalendrier, stats };
 }
 
-// Utilitaires exportés pour réutilisation dans les composants
+// Utilitaires
 export function estEnRetard(tache) {
   if (!tache.deadline || tache.terminee) return false;
-  const auj = new Date(); auj.setHours(0, 0, 0, 0);
-  const dl  = new Date(tache.deadline); dl.setHours(0, 0, 0, 0);
+  const auj = new Date(); auj.setHours(0,0,0,0);
+  const dl  = new Date(tache.deadline + 'T00:00:00'); dl.setHours(0,0,0,0);
   return dl < auj;
 }
 
 export function procheDeadline(deadline) {
   if (!deadline) return false;
-  const auj = new Date(); auj.setHours(0, 0, 0, 0);
-  const dl  = new Date(deadline); dl.setHours(0, 0, 0, 0);
+  const auj  = new Date(); auj.setHours(0,0,0,0);
+  const dl   = new Date(deadline + 'T00:00:00'); dl.setHours(0,0,0,0);
   const diff = (dl - auj) / (1000 * 60 * 60 * 24);
   return diff >= 0 && diff <= 3;
 }

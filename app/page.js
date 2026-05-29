@@ -1,27 +1,13 @@
-'use client';
-import BannerFacturation from '@/components/BannerFacturation';
-import Header            from '@/components/Header';
-import Stats             from '@/components/Stats';
-import TaskForm          from '@/components/TaskForm';
-import TaskList          from '@/components/TaskList';
-import { useTaches }     from '@/hooks/useTaches';
+import { auth }       from "@/auth";
+import LoginPage      from "@/components/LoginPage";
+import TodoApp        from "@/components/TodoApp";
 
-export default function Page() {
-  const { taches, ajouterTache, toggleTerminee, supprimerTache, stats } = useTaches();
+export default async function Page() {
+  const session = await auth();
 
-  return (
-    <>
-      <BannerFacturation />
-      <div className="conteneur">
-        <Header />
-        <Stats stats={stats} />
-        <TaskForm onAjouter={ajouterTache} />
-        <TaskList
-          taches={taches}
-          onToggle={toggleTerminee}
-          onSupprimer={supprimerTache}
-        />
-      </div>
-    </>
-  );
+  // Pas connecté → page de connexion
+  if (!session) return <LoginPage />;
+
+  // Connecté → application
+  return <TodoApp session={session} />;
 }

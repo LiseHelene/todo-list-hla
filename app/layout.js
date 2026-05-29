@@ -1,4 +1,5 @@
 import "./globals.css";
+import Providers from "@/components/Providers";
 
 export const metadata = {
   title: "Huglo Lepage Avocats — Gestionnaire de tâches",
@@ -14,7 +15,9 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
