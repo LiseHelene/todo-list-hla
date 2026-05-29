@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import TaskItem from './TaskItem';
 import Modal from './Modal';
 import { estEnRetard } from '@/hooks/useTaches';
@@ -14,7 +14,7 @@ const FILTRES = [
 ];
 
 export default function TaskList({ taches, onToggle, onSupprimer }) {
-  const [filtre, setFiltre]       = useState('toutes');
+  const [filtre, setFiltre] = useState('toutes');
   const [idASupprimer, setIdASupprimer] = useState(null);
 
   function filtrerTaches() {
@@ -29,24 +29,38 @@ export default function TaskList({ taches, onToggle, onSupprimer }) {
   }
 
   const tachesFiltrees = filtrerTaches();
+  const counts = useMemo(() => ({
+    toutes: taches.length,
+    urgente: taches.filter(t => t.priorite === 'urgente' && !t.terminee).length,
+    haute: taches.filter(t => t.priorite === 'haute' && !t.terminee).length,
+    normale: taches.filter(t => t.priorite === 'normale' && !t.terminee).length,
+    terminees: taches.filter(t => t.terminee).length,
+    retard: taches.filter(t => estEnRetard(t) && !t.terminee).length,
+  }), [taches]);
 
   return (
     <>
-      <div className="filtres">
+      <div className="filters">
         {FILTRES.map(f => (
           <button
             key={f.key}
-            className={`filtre ${filtre === f.key ? 'actif' : ''}`}
+            className={`chip ${filtre === f.key ? 'active' : ''}`}
             onClick={() => setFiltre(f.key)}
           >
             {f.label}
+            <span className="count">{counts[f.key] ?? 0}</span>
           </button>
         ))}
       </div>
 
-      <section className="liste-taches">
+      <section className="tasklist">
         {tachesFiltrees.length === 0 ? (
-          <p className="message-vide">Aucune tâche pour l&apos;instant.</p>
+          <div className="empty">
+            <div className="eh tl hatch-mid"></div>
+            <div className="eh br hatch-mid"></div>
+            <div className="etitle">Liste vide</div>
+            <div className="etext">Aucune tâche ne correspond à ce filtre.</div>
+          </div>
         ) : (
           tachesFiltrees.map(tache => (
             <TaskItem

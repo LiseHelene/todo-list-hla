@@ -13,11 +13,15 @@ export default function TodoApp({ session }) {
   return (
     <>
       <BannerFacturation />
-      <div className="conteneur">
+      <div className="page">
         <Header session={session} />
         <Stats stats={stats} />
         <TaskForm onAjouter={ajouterTache} />
         <ImportCalendrier onImporter={ajouterDepuisCalendrier} />
+        <div className="section-label">
+          <span className="label">Tâches du cabinet</span>
+          <span className="rule"></span>
+        </div>
         {chargement ? (
           <p className="message-vide">Chargement des tâches…</p>
         ) : (
